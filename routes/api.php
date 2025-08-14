@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('halls/{id}', [HallController::class, 'show']);
 
     Route::get('showtimes', [ShowtimeController::class, 'index']);
+    Route::get('showtimes/halls/{id}', [ShowtimeController::class, 'showByHall']);
     Route::get('showtimes/{id}', [ShowtimeController::class, 'show']);
     Route::get('showtimes/{id}/seats', [ShowtimeController::class, 'showAvailableSeats']);
 
@@ -49,6 +50,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('genres/{id}', [GenreController::class, 'destroy']);
 
         Route::get('bookings', [BookingController::class, 'index']);
+
+        Route::post('showtimes', [ShowtimeController::class, 'store']);
 
         Route::resource('movie-certifications', MovieCertificationController::class);
     });

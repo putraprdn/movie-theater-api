@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\API;
 
+use DateTime;
+use Carbon\Carbon;
 use App\Models\Hall;
+use App\Models\Movie;
+use App\Models\Booking;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
 use App\Http\Resources\ShowtimeResource;
-use App\Models\Booking;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class ShowtimeController extends baseController
 {
@@ -15,7 +20,7 @@ class ShowtimeController extends baseController
      */
     public function index()
     {
-        $showtimes = Showtime::with(['hall', 'movie'])->get();
+        $showtimes = Showtime::with(['hall', 'movie.movie_certification'])->get();
 
         return $this->sendResponse(ShowtimeResource::collection($showtimes), 'Showtimes fetches successfully');
     }
@@ -25,7 +30,58 @@ class ShowtimeController extends baseController
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'movie_id' => ['required', 'exists:movies,id'],
+            'hall_id' => ['required', 'exists:halls,id'],
+            'start_time' => ['required', 'date_format:Y-m-d H:i',
+            // 'min:' . now()->format('Y-m-d H:i')
+        ],
+            // 'end_time' => [
+            //     'nullable',
+            //     'date_format:Y-m-d H:i',
+            //     function ($attribute, $value, $fail) use ($input) {
+            //         if (!empty($value)) {
+            //             $start = Carbon::parse($input['start_time']);
+            //             $end = Carbon::parse($value);
+            //             if ($end->diffInHours($start, false) > 5) {
+            //                 $fail('The end time must be within 5 hours after the start time.');
+            //             }
+            //         }
+            //     },
+            // ],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation error', $validator->errors(), Response::HTTP_BAD_REQUEST);
+        }
+
+        // Dynamically calculate end_time
+        $movieDuration = Movie::where('id', $input['movie_id'])->value('duration');
+        $input['end_time'] = Carbon::parse($input['start_time'])
+            ->addSeconds($movieDuration)
+            ->addMinutes(15)
+            ->format('Y-m-d H:i');
+
+        // Prevent duplicates in the same hall overlapping the same date
+        $checkDuplicate = Showtime::where('hall_id', $input['hall_id'])
+            ->where(function ($query) use ($input) {
+                $query->whereBetween('start_time', [$input['start_time'], $input['end_time']])
+                    ->orWhereBetween('end_time', [$input['start_time'], $input['end_time']]);
+            })
+            ->exists();
+
+        if ($checkDuplicate) {
+            return $this->sendError('Validation error', [
+                'showtime' => 'A showtime already exists in this hall during the specified period.'
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $showtime = Showtime::create($input);
+        $showtime->load(['hall', 'movie.movie_certification']);
+
+        return $this->sendResponse(new ShowtimeResource($showtime), 'Showtime created successfully', Response::HTTP_CREATED);
     }
 
     /**
@@ -33,9 +89,16 @@ class ShowtimeController extends baseController
      */
     public function show($id)
     {
-        $showtime = Showtime::where('id', $id)->with(['hall', 'movie'])->first();
+        $showtime = Showtime::where('id', $id)->with(['hall', 'movie.movie_certification'])->first();
 
         return $this->sendResponse(new ShowtimeResource($showtime), 'Showtime fetched successfully');
+    }
+
+    public function showByHall($id)
+    {
+        $showtimes = Showtime::where('hall_id', $id)->with(['hall', 'movie.movie_certification'])->get();
+
+        return $this->sendResponse(ShowtimeResource::collection($showtimes), 'Showtimes by hall fetched successfully');
     }
 
     public function showAvailableSeats($id)
