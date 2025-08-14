@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('booking_id')->constrained('bookings');
             $table->foreignId('seat_id')->constrained('seats');
-            $table->decimal('price', 10, 2);
             $table->timestamps();
             $table->softDeletes();
         });

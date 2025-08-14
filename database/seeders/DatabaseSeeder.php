@@ -75,6 +75,7 @@ class DatabaseSeeder extends Seeder
                     $seats[] = [
                         'hall_id' => $hall->id,
                         'seat_number' => $row . $i,
+                        'price' => \Faker\Factory::create()->randomFloat(2, 20000, 50000)
                     ];
                 }
             }

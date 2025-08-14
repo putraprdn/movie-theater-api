@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('hall_id')->constrained('halls');
             $table->string('seat_number'); // e.g., A1, B3
+            $table->decimal('price', 10, 2);
             $table->timestamps();
             $table->softDeletes();
 

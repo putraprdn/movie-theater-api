@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('release_date')->nullable();
-            $table->unsignedInteger("duration"); // in seconds
+            $table->unsignedInteger("duration")->nullable(); // in seconds
             $table->foreignId('genre_id')->constrained('genres')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('certification_id')->nullable()->constrained('movie_certifications')->cascadeOnUpdate()->nullOnDelete();
             $table->unsignedInteger("total_review")->default(0);

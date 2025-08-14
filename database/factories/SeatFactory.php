@@ -20,6 +20,7 @@ class SeatFactory extends Factory
         return [
             'hall_id' => Hall::inRandomOrder()->first()->id,
             'seat_number' => $this->faker->unique()->randomElement(['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']),
+            'price' => $this->faker->randomFloat(2, 20000, 50000),
         ];
     }
 }
