@@ -1,0 +1,1166 @@
+{
+	"info": {
+		"_postman_id": "780cb22e-0d2c-442f-9a04-307d1958b227",
+		"name": "WSI - MovieTheater",
+		"description": "# WSI - MovieTheater API Documentation\n\n## Overview\n\nThis documentation provides detailed information on the MovieTheater API endpoints, derived from the provided Postman collection and Laravel route definitions. The API manages resources such as movies, genres, bookings, seats, halls, showtimes, and movie certifications. All endpoints require authentication via Sanctum (Bearer Token), obtained through login or registration.\n\n## Key Focus: Admin-Protected Routes\n\nThis documentation emphasizes routes that are admin-only, protected by the `role:admin` middleware. These routes are accessible only to users with admin privileges. Non-admin users attempting access will receive authorization errors (e.g., 403 Forbidden).\n\n## Authentication Requirement\n\nAll routes use Bearer Token authentication.\n\n- **Base URL**: `{{BaseAPI}}` (e.g., [http://localhost:8000/api](http://localhost:8000/api)).\n    \n- **Headers for All Requests**:\n    \n    - `Accept`: application/json\n        \n    - `Content-Type`: application/json (for POST/PUT requests)\n        \n    - `Authorization`: Bearer `{{token}}`\n        \n\n## Admin-Only Routes Summary\n\n- **Movies**: Create, Update, Delete\n    \n- **Genres**: Create, Update\n    \n- **Bookings**: Get All\n    \n- **Showtimes**: Create\n    \n- **Movie Certifications**: Read\n    \n\n## Non-Admin Routes Summary\n\n- **Movies**: Get All, Get by ID\n    \n- **Genres**: Get All, Get by ID\n    \n- **Bookings**: Get by User, Get by ID, Create\n    \n- **Seats**: Get All, Get by ID\n    \n- **Halls**: Get All, Get by ID\n    \n- **Showtimes**: Get All, Get by ID, Get Available Seats, Get By Hall ID\n    \n\nFor non-admin routes, refer to the full Postman collection or general API usage. Error responses typically follow a standard format: `{ \"message\": \"Error description\" }`.\n\n## Authentication\n\nBefore accessing any protected routes, authenticate to obtain a token.\n\n### Admin Login\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/login`\n    \n- { \"email\": \"[admin@mail.com](https://mailto:admin@mail.com)\", \"password\": \"password\" }\n    \n- { \"data\": { \"token\": \"your-jwt-token-here\" } }\n    \n- **Postman Test Script**: Saves token to environment variable `token`.\n    \n\n**Note**: Use this token for all subsequent requests. User login is similar but uses different credentials (e.g., \"[user@mail.com](https://mailto:user@mail.com)\").\n\n## Admin-Protected Routes\n\n### Movies (Admin-Only CRUD)\n\n#### Create Movie\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/movies`\n    \n- **Description**: Creates a new movie entry.\n    \n- { \"title\": \"Film Baru\", \"description\": \"New film description\", \"release_date\": \"2025-09-01\", \"duration\": 5512, \"genre_id\": 5, \"certification_id\": 4 }\n    \n- **Response (201 Created)**: Returns the created movie object.\n    \n- **Authorization**: Admin-only.\n    \n\n#### Update Movie\n\n- **Method**: `PUT`\n    \n- **Endpoint**: `/movies/{id}`\n    \n- **Description**: Updates an existing movie by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Movie ID (e.g., 13)\n        \n- { \"title\": \"Culpa Cubat Cubit\", \"description\": \"New film description\", \"release_date\": \"2025-09-01\", \"duration\": 2000, \"genre_id\": 5, \"certification_id\": 4 }\n    \n- **Response (200 OK)**: Returns the updated movie object.\n    \n- **Authorization**: Admin-only.\n    \n\n#### Delete Movie\n\n- **Method**: `DELETE`\n    \n- **Endpoint**: `/movies/{id}`\n    \n- **Description**: Deletes a movie by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Movie ID (e.g., 11)\n        \n- **Response (204 No Content)**: Success with no body.\n    \n- **Authorization**: Admin-only.\n    \n\n### Genres (Admin-Only CRUD)\n\n#### Create Genre\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/genres`\n    \n- **Description**: Creates a new genre.\n    \n- { \"name\": \"new genre\" }\n    \n- **Response (201 Created)**: Returns the created genre object.\n    \n- **Authorization**: Admin-only.\n    \n\n#### Update Genre\n\n- **Method**: `PUT`\n    \n- **Endpoint**: `/genres/{id}`\n    \n- **Description**: Updates an existing genre by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Genre ID (e.g., 6)\n        \n- { \"name\": \"updated genre\" }\n    \n- **Response (200 OK)**: Returns the updated genre object.\n    \n- **Authorization**: Admin-only.\n    \n\n### Bookings (Admin-Only Index)\n\n#### Get All Bookings\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/bookings`\n    \n- **Description**: Retrieves a list of all bookings (admin view).\n    \n- **Response (200 OK)**: Array of booking objects, including user, showtime, and seats.\n    \n- **Authorization**: Admin-only.\n    \n\n### Showtimes (Admin-Only Create)\n\n#### Create Showtime\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/showtimes`\n    \n- **Description**: Schedules a new showtime.\n    \n- { \"movie_id\": 1, \"hall_id\": \"2\", \"start_time\": \"2025-01-01 08:00\" }\n    \n- **Response (201 Created)**: Returns the created showtime object.\n    \n- **Authorization**: Admin-only.\n    \n\n### Movie Certifications (Admin-Only)\n\n#### Get All Certifications\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/movie-certifications`\n    \n- **Description**: Retrieves all movie certifications.\n    \n- **Response (200 OK)**: Array of certification objects.\n    \n- **Authorization**: Admin-only.\n    \n\n## Non-Admin Routes\n\n### User Registration (Non-Admin)\n\n#### Register User\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/register`\n    \n- **Description**: Registers a new user in the system.\n    \n- { \"name\": \"New User\", \"email\": \"newuser[@mail.com](https://mailto:njul@mail.com)\", \"password\": \"12345678\" }\n    \n- { \"data\": { \"token\": \"your-jwt-token-here\", \"name\": \"New User\" } }\n    \n- **Error Responses**:\n    \n    - **400 Bad Request**: Validation errors if input is invalid.\n        \n- **Authorization**: No authentication required for registration.\n    \n\n### Movies (Non-Admin)\n\n#### Get All Movies\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/movies`\n    \n- **Description**: Retrieves a list of all movies.\n    \n- **Response (200 OK)**: Array of movie objects.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Movie by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/movies/{id}`\n    \n- **Description**: Retrieves details of a specific movie by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Movie ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns the movie object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n### Genres (Non-Admin)\n\n#### Get All Genres\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/genres`\n    \n- **Description**: Retrieves a list of all genres.\n    \n- **Response (200 OK)**: Array of genre objects.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Genre by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/genres/{id}`\n    \n- **Description**: Retrieves details of a specific genre by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Genre ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns the genre object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n### Bookings (Non-Admin)\n\n#### Get Bookings by User\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/bookings/me`\n    \n- **Description**: Retrieves bookings for the authenticated user.\n    \n- **Response (200 OK)**: Array of booking objects for the user.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Booking by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/bookings/{id}`\n    \n- **Description**: Retrieves details of a specific booking by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Booking ID (e.g., 2)\n        \n- **Response (200 OK)**: Returns the booking object, including user, showtime, and seats.\n    \n- **Authorization**: Authenticated users only (owner).\n    \n\n#### Create Booking\n\n- **Method**: `POST`\n    \n- **Endpoint**: `/bookings`\n    \n- **Description**: Creates a new booking for a showtime.\n    \n- { \"showtime_id\": 5, \"seats\": \\[\"51\", \"62\", \"53\"\\] }\n    \n- **Response (201 Created)**: Returns the created booking object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n### Seats (Non-Admin)\n\n#### Get All Seats\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/seats`\n    \n- **Description**: Retrieves a list of all seats.\n    \n- **Response (200 OK)**: Returns an array of seat objects.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Seat by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/seats/{id}`\n    \n- **Description**: Retrieves details of a specific seat by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Seat ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns the seat object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n### Halls (Non-Admin)\n\n#### Get All Halls\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/halls`\n    \n- **Description**: Retrieves a list of all halls.\n    \n- **Response (200 OK)**: Returns an array of hall objects.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Hall by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/halls/{id}`\n    \n- **Description**: Retrieves details of a specific hall by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Hall ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns the hall object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n### Showtimes (Non-Admin)\n\n#### Get All Showtimes\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/showtimes`\n    \n- **Description**: Retrieves a list of all showtimes.\n    \n- **Response (200 OK)**: Array of showtime objects.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Showtime by ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/showtimes/{id}`\n    \n- **Description**: Retrieves details of a specific showtime by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Showtime ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns the showtime object.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Showtimes by Hall ID\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/showtimes/halls/{id}`\n    \n- **Description**: Retrieves all showtimes for a specific hall by ID.\n    \n- **Path Parameters**:\n    \n    - `id`: Hall ID (e.g., 2)\n        \n- **Response (200 OK)**: Returns an array of showtime objects for the specified hall.\n    \n- **Authorization**: Authenticated users only.\n    \n\n#### Get Available Seats for Showtime\n\n- **Method**: `GET`\n    \n- **Endpoint**: `/showtimes/{id}/seats`\n    \n- **Description**: Retrieves available seats for a specific showtime.\n    \n- **Path Parameters**:\n    \n    - `id`: Showtime ID (e.g., 1)\n        \n- **Response (200 OK)**: Returns available seats for the showtime.\n    \n- **Authorization**: Authenticated users only.\n    \n\n## Error Handling\n\n- **401 Unauthorized**: Missing or invalid token.\n    \n- **403 Forbidden**: Non-admin access to admin routes.\n    \n- **404 Not Found**: Invalid resource ID.\n    \n- **422 Unprocessable Entity**: Validation errors (e.g., invalid request body).\n    \n\n## Testing in Postman\n\nImport the provided collection JSON into Postman. Use environment variables for `{{BaseAPI}}` and `{{token}}`. Run the \"Admin Login\" request first to set the token. Admin routes will fail without admin credentials.\n\nFor further details or full non-admin routes, refer to the original Postman collection or Laravel routes file.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20485187"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJSON = pm.response.json();\r",
+									"\r",
+									"// Save the token to the environment variable\r",
+									"pm.test(\"Token is saved to environment variable\", function () {\r",
+									"    pm.expect(responseJSON).to.have.property('data').that.has.property('token').that.is.a('string').and.is.not.empty;\r",
+									"    pm.environment.set(\"token\", responseJSON.data.token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@mail.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/login",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseJSON = pm.response.json();\r",
+									"\r",
+									"// Save the token to the environment variable\r",
+									"pm.test(\"Token is saved to environment variable\", function () {\r",
+									"    pm.expect(responseJSON).to.have.property('data').that.has.property('token').that.is.a('string').and.is.not.empty;\r",
+									"    pm.environment.set(\"token\", responseJSON.data.token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"user@mail.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/login",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Panjul Gurih\",\r\n    \"email\": \"njul@mail.com\",\r\n    \"password\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/register",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movie",
+			"item": [
+				{
+					"name": "Get All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@mail.com\",\r\n    \"password\":\"password\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/movies",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Film Baru\",\r\n    \"description\": \"New film description\",\r\n    \"release_date\": \"2025-09-01\",\r\n    \"duration\": 5512,\r\n    \"genre_id\": 5,\r\n    \"certification_id\": 4\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/movies",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Certifications All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/movie-certifications",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movie-certifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/movies/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movies",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Culpa Cubat Cubit\",\r\n    \"description\": \"New film description\",\r\n    \"release_date\": \"2025-09-01\",\r\n    \"duration\": 2000,\r\n    \"genre_id\": 5,\r\n    \"certification_id\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/movies/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movies",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "13"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Destroy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/movies/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"movies",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "Get All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@mail.com\",\r\n    \"password\":\"password\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/genres",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"admin@mail.com\",\r\n    \"password\":\"password\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/genres/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"genres",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"new genre\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/genres",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"genres"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"updated genre\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/genres/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"genres",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Booking",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/bookings",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"showtime_id\": 5,\r\n    \"seats\": [\r\n        \"65\",\r\n        \"55\",\r\n        \"68\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/bookings",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/bookings/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"bookings",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/bookings/me",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"bookings",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Seats",
+			"item": [
+				{
+					"name": "Get By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/seats/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"seats",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Halls",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/halls",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"halls"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/halls/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"halls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Showtime",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/showtimes",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"showtimes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Available Seats",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/showtimes/:id/seats",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"showtimes",
+								":id",
+								"seats"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/showtimes/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"showtimes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "By Hall ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseAPI}}/showtimes/halls/:id",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"showtimes",
+								"halls",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"movie_id\": 1,\r\n    \"hall_id\": 1,\r\n    \"start_time\": \"2025-08-20 04:18\"\r\n}"
+						},
+						"url": {
+							"raw": "{{BaseAPI}}/showtimes",
+							"host": [
+								"{{BaseAPI}}"
+							],
+							"path": [
+								"showtimes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
