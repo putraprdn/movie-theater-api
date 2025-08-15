@@ -47,7 +47,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('genres', [GenreController::class, 'store']);
         Route::put('genres/{id}', [GenreController::class, 'update']);
-        Route::delete('genres/{id}', [GenreController::class, 'destroy']);
 
         Route::get('bookings', [BookingController::class, 'index']);
 
